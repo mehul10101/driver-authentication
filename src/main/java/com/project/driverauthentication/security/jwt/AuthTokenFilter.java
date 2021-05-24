@@ -1,5 +1,7 @@
 package com.project.driverauthentication.security.jwt;
 
+import com.project.driverauthentication.entities.DriverEntity;
+import com.project.driverauthentication.repositories.DriverRepository;
 import com.project.driverauthentication.security.services.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
@@ -23,6 +26,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
+
+	@Autowired
+	private DriverRepository driverRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
@@ -33,7 +39,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			String jwt = parseJwt(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 				String username = jwtUtils.getUserNameFromJwtToken(jwt);
-
+				String userIdString = request.getHeader("userId");
+				if(!request.getRequestURL().toString().contains("/auth") && userIdString == null){
+					throw new RuntimeException("error user id not present");
+				}
+				Optional<DriverEntity> driverEntityOptional = driverRepository.findFirstById(Long.valueOf(userIdString));
+				if(!driverEntityOptional.isPresent() || !driverEntityOptional.get().getUserName().equals(username)){
+					throw new RuntimeException("error : driver user not present");
+				}
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());

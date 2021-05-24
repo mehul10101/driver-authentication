@@ -1,7 +1,5 @@
 package com.project.driverauthentication.entities;
 
-import org.hibernate.annotations.GeneratorType;
-
 import javax.persistence.*;
 
 @Entity

@@ -12,4 +12,6 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Integer> {
     Optional<DriverEntity> findFirstByUserName(String userName);
 
     Optional<DriverEntity> findFirstByEmail(String email);
+
+    Optional<DriverEntity> findFirstById(Long id);
 }

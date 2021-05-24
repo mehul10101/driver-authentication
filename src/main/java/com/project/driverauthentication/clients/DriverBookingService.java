@@ -11,18 +11,18 @@ import java.util.List;
 @Component
 public interface DriverBookingService {
 
-    @GET("/users")
-    Call<List<BookingDetailsResponse>> getBookings(@Body BookingDetailsRequest bookingDetailsRequest);
+    @GET("/driver/booking/requestsNearBy/{vehicleType}/{pinCode}")
+    Call<List<BookingDetailsResponse>> getBookings(@Path("vehicleType") String vehicleType, @Path("pinCode") Integer pinCode);
 
-    @POST
-    Call<BookingDetailsResponse> bookRide(@Query("rideId") Integer rideId);
+    @POST("/driver/booking/bookRide")
+    Call<BookingDetailsResponse> bookRide(@Query("rideId") Integer rideId, @Query("driverId") Long driverId);
 
-    @PUT
-    Call<BookingDetailsResponse> cancelRide(@Query("rideId") Integer rideId);
+    @PUT("/driver/booking/cancelRide")
+    Call<BookingDetailsResponse> cancelRide(@Query("rideId") Integer rideId, @Query("driverId") Long driverId);
 
-    @PUT
-    Call<Void> startRide(@Query("rideId") Integer rideId);
+    @PUT("/driver/booking/startRide")
+    Call<Void> startRide(@Query("rideId") Integer rideId, @Query("driverId") Long driverId);
 
-    @PUT
-    Call<Void> endRide(@Query("rideId") Integer rideId);
+    @PUT("/driver/booking/endRide")
+    Call<Void> endRide(@Query("rideId") Integer rideId, @Query("driverId") Long driverId);
 }

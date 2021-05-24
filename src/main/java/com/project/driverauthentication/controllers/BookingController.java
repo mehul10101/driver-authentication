@@ -1,8 +1,7 @@
-package com.project.driverauthentication.controllers.controllers;
+package com.project.driverauthentication.controllers;
 
 import com.project.driverauthentication.clients.DriverBookingService;
 import com.project.driverauthentication.clients.serviceGenerator.DriverBookingServiceGenerator;
-import com.project.driverauthentication.pojo.requests.BookingDetailsRequest;
 import com.project.driverauthentication.pojo.responses.BookingDetailsResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +26,13 @@ public class BookingController {
      * @return BookingDetailsResponse - will contain the details of all the rides available at pin code
      * @throws IOException
      */
-    @GetMapping(value = "/details")
-    public List<BookingDetailsResponse> getBookingDetails(@RequestBody BookingDetailsRequest bookingDetailsRequest) throws IOException {
+    @GetMapping(value = "/details/{vehicleType}/{pinCode}")
+    public List<BookingDetailsResponse> getBookingDetails(@PathVariable("vehicleType") String vehicleType,
+                                                          @PathVariable("pinCode") Integer pinCode,
+                                                          @RequestHeader("userId") Long userId) throws IOException {
         try {
             Response<List<BookingDetailsResponse>> bookingDetailsResponseList =
-                    driverBookingService.getBookings(bookingDetailsRequest).execute();
+                    driverBookingService.getBookings(vehicleType, pinCode).execute();
             return bookingDetailsResponseList.body();
         } catch (Exception e) {
             log.error("error while calling service ", e);
@@ -46,10 +47,11 @@ public class BookingController {
      * @throws IOException
      */
     @PostMapping(value = "/bookRide")
-    public BookingDetailsResponse bookRide(@Param("rideId") Integer rideId) throws IOException {
+    public BookingDetailsResponse bookRide(@Param("rideId") Integer rideId,
+                                           @RequestHeader("userId") Long userId) throws IOException {
         try {
             Response<BookingDetailsResponse> bookingResponse =
-                    driverBookingService.bookRide(rideId).execute();
+                    driverBookingService.bookRide(rideId, userId).execute();
             return bookingResponse.body();
         } catch (Exception e) {
             log.error("error while calling service ", e);
@@ -64,10 +66,11 @@ public class BookingController {
      * @throws IOException
      */
     @PutMapping(value = "/cancelRide")
-    public BookingDetailsResponse cancelRide(@Param("rideId") Integer rideId) throws IOException {
+    public BookingDetailsResponse cancelRide(@Param("rideId") Integer rideId,
+                                             @RequestHeader("userId") Long userId) throws IOException {
         try {
             Response<BookingDetailsResponse> bookingResponse =
-                    driverBookingService.cancelRide(rideId).execute();
+                    driverBookingService.cancelRide(rideId, userId).execute();
             return bookingResponse.body();
         } catch (Exception e) {
             log.error("error while calling service ", e);
@@ -81,9 +84,9 @@ public class BookingController {
      * @throws IOException
      */
     @PutMapping(value = "/startRide")
-    public void startRide(@Param("rideId") Integer rideId) throws IOException {
+    public void startRide(@Param("rideId") Integer rideId, @RequestHeader("userId") Long userId) throws IOException {
         try {
-            Response<Void> response = driverBookingService.startRide(rideId).execute();
+            Response<Void> response = driverBookingService.startRide(rideId, userId).execute();
             if(!response.isSuccessful()){
                 throw new RuntimeException("start ride failed");
             }
@@ -99,9 +102,9 @@ public class BookingController {
      * @throws IOException
      */
     @PutMapping(value = "/endRide")
-    public void endRide(@Param("rideId") Integer rideId) throws IOException {
+    public void endRide(@Param("rideId") Integer rideId, @RequestHeader("userId") Long userId) throws IOException {
         try {
-            Response<Void> response = driverBookingService.endRide(rideId).execute();
+            Response<Void> response = driverBookingService.endRide(rideId, userId).execute();
             if(!response.isSuccessful()){
                 throw new RuntimeException("end ride failed");
             }

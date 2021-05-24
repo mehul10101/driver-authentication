@@ -1,4 +1,4 @@
-package com.project.driverauthentication.controllers.controllers;
+package com.project.driverauthentication.controllers;
 
 import com.project.driverauthentication.pojo.requests.LoginRequest;
 import com.project.driverauthentication.pojo.requests.SignUpRequest;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/auth/user")
+@RequestMapping(value = "/auth/driver")
 @Slf4j
 public class DriverAuthenticationController {
 
@@ -30,14 +30,12 @@ public class DriverAuthenticationController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) throws ApiError {
         log.info("got login request with user name {}", loginRequest.getUserName());
-//        loginService = new UserLoginService();
         return loginService.signIn(loginRequest);
     }
 
     @PostMapping("/signUp")
     public SignUpResponse signUp(@RequestBody SignUpRequest signUpRequest) {
         log.info("request for creating an account with user name {}", signUpRequest.getUserName());
-//        signUpService = new UserSignUpService();
         return signUpService.signUp(signUpRequest);
     }
 
